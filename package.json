@@ -1,0 +1,17 @@
+{
+  "name": "IoTHub_EventHub_MongoDB",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "run-local":"func start",
+    "deploy":"func azure functionapp publish iottocosmos"
+  },
+  "keywords": [],
+  "author": "Andrew Moss",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^3.3.0"
+  }
+}
