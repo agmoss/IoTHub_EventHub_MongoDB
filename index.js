@@ -1,38 +1,45 @@
-const config = require("./config");
-var mongoClient = require("mongodb").MongoClient;
+/**
+ * **Azure Cloud Function: Sends IoT Hub messages to MongoDB API CosmosDB**
+ *  @param context object used for receiving and sending binding data, logging, and communicating with the runtime.
+ *  @param IoTHubMessage message from the IoT hub
+ */
+module.exports = (context, IoTHubMessage) => {
+	
+  try {
 
-module.exports = (context, IoTHubMessages) =>{
+		//TODO: Import these
+    var dbName = "putdbnamehere";
+    var collectionName = "putcollectionnamehere";
 
-	try {
+    context.log(`JS IoT Hub trigger called on: ${JSON.stringify(IoTHubMessage)}`);
 
-		context.log(`JS IoT Hub trigger called on: ${JSON.stringify(IoTHubMessages)}`);
+		// Mongo Client
+    var mongoClient = require("mongodb").MongoClient;
+    context.log('MongoClient created');
 
-		var dbName = config.dbName;
-		var collectionName = config.collectionName;
+    var conn = "putconhere";
 
-		// MongoDB client
-		mongoClient.connect(config.connectionString,{useNewUrlParser: true, authSource: dbName}, (error, client) => {
+    mongoClient.connect(conn,{useNewUrlParser: true, authSource: dbName},  (error, client) => {
 
-			if(error){
-				context.log(`Error occurred while connecting to DB: ${error}`);
-			} else{
-				context.log('MongoDB Client connected to DB');
-			}
+      if(error){
+        context.log(`Error occurred while connecting to Cosmos MongoDB ${err}`)
+      } else{
+        context.log('Mongo Client connected to DB');
+      }
 
-			var collection = client.db(dbName).collection(collectionName);
-			context.log(`MongoDB Client collection retreived: ${collection}`);
-			collection.insertOne(IoTHubMessages, {w: 1});
-			client.close();
-			context.log(`Message Saved to Cosmos MongoDB: ${JSON.stringify(IoTHubMessages)}`);
-			context.done();
+      var collection = client.db(dbName).collection(collectionName);
+      context.log('MongoClient collection retreived');
+      collection.insertOne(IoTHubMessage, {w: 1});
+      client.close();
+      context.log(`Message saved to CosmosDB: ${JSON.stringify(IoTHubMessage)}`);
+      context.done();
+    });
 
-		});
+  } catch (error){
+    context.log(`Error ${error}`);
+  }
+
+  context.log('Done!');
+  context.done();
   
-    } catch (error){
-      context.log(`Function Error: ${error}`);
-    }
-  
-    context.log('Done!');
-    context.done();
-
-  };
+}
