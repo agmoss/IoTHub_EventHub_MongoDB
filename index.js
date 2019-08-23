@@ -4,42 +4,42 @@
  *  @param IoTHubMessage message from the IoT hub
  */
 module.exports = (context, IoTHubMessage) => {
-	
-  try {
 
-		//TODO: Import these
-    var dbName = "putdbnamehere";
-    var collectionName = "putcollectionnamehere";
+	try {
 
-    context.log(`JS IoT Hub trigger called on: ${JSON.stringify(IoTHubMessage)}`);
+		var config = require("./config");
+		var dbName = config.dbName;
+		var collectionName = config.collectionName;
+		var conn = config.connectionString;
+
+		context.log(`JS IoT Hub trigger called on: ${JSON.stringify(IoTHubMessage)}`);
 
 		// Mongo Client
-    var mongoClient = require("mongodb").MongoClient;
-    context.log('MongoClient created');
+		var mongoClient = require("mongodb").MongoClient;
+		context.log('MongoClient created');
 
-    var conn = "putconhere";
+		mongoClient.connect(conn, { useNewUrlParser: true, authSource: dbName }, (error, client) => {
 
-    mongoClient.connect(conn,{useNewUrlParser: true, authSource: dbName},  (error, client) => {
+			if (error) {
+				context.log(`Error occurred while connecting to Cosmos MongoDB ${err}`)
+			} else {
+				context.log('Mongo Client connected to DB');
+			}
 
-      if(error){
-        context.log(`Error occurred while connecting to Cosmos MongoDB ${err}`)
-      } else{
-        context.log('Mongo Client connected to DB');
-      }
+			var collection = client.db(dbName).collection(collectionName);
+			context.log('MongoClient collection retreived');
+			collection.insertOne(IoTHubMessage, { w: 1 });
+			client.close();
+			context.log(`IoT Message saved to CosmosDB: ${JSON.stringify(IoTHubMessage)}`);
+			context.done();
 
-      var collection = client.db(dbName).collection(collectionName);
-      context.log('MongoClient collection retreived');
-      collection.insertOne(IoTHubMessage, {w: 1});
-      client.close();
-      context.log(`Message saved to CosmosDB: ${JSON.stringify(IoTHubMessage)}`);
-      context.done();
-    });
+		});
 
-  } catch (error){
-    context.log(`Error ${error}`);
-  }
+	} catch (error) {
+		context.log(`Error ${error}`);
+	}
 
-  context.log('Done!');
-  context.done();
-  
+	context.log('Done!');
+	context.done();
+
 }
