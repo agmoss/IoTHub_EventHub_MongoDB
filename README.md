@@ -4,12 +4,8 @@
 
 ## About
 
-Azure Function App for routing IoT hub messages to an external database. 
+Azure Function App for routing IoT hub messages to an external MongoDB database.
 
 ## Built With
 
 * [Node.js](https://nodejs.org/en/) - JavaScript runtime
-
-## Author
-
-* **Andrew Moss** - *Creator* - [agmoss](https://github.com/agmoss)
